@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>可变式存储管理</title>
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<!--<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="col-lg-6">
+        <h3 id="state">总块号10，已分配<span id="space_user">0</span>，剩余<span id="space_release">0</span>，每块大小2048</h3>
+        <ul class="list-group" id="zone">
+          <!--<li class="list-group-item" id="0">空闲块号1</li>-->       
+        </ul>
+    </div><!--[col-lg-6]end-->
+    <div class="col-lg-6">
+    	<h3>可变分区式存储管理模拟</h3>
+    	<div class="col-lg-12">
+            <!--<form>-->
+              <div class="form-group">
+                <label for="sq">申请作业</label>
+                <input type="text" class="form-control" id="sq" value="20" placeholder="请输入要申请的空间大小" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+              </div>
+              <button type="submit" class="btn btn-default" onClick="apply()"><i class="glyphicon glyphicon-plus"></i> 申请 </button>
+              <div class="form-group">
+                <label for="sf">释放作业</label>
+                <input type="text" class="form-control" id="sf" placeholder="请输入要释放的空间编号" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                <p class="help-block">温馨提示：使用鼠标单击左边红色的使用空间，可自动填写编号！</p>
+              </div>
+			  <button type="submit" class="btn btn-default" onClick="release()"><i class="glyphicon glyphicon-trash"></i> 释放 </button>
+            <!--</form>-->
+        </div><!--[col-lg-12]end-->
+    </div><!--[col-lg-6]end-->
+</div><!--[container]end-->
+
+<script type="text/javascript">
+
+function color(num){
+	var color;
+	switch(num){
+		case 0:
+		  color="list-group-item-success";
+		  break;
+		case 1:
+		  color="list-group-item-danger";
+		  break;
+		default:
+		  color="";		
+	}
+	return color;
+}
+
+function check(id){
+	document.getElementById("sf").value=id;
+}
+function show(){
+	var str='';
+	var colors;
+	var no_user_size=0;
+	var user_size=0;
+	var str_state='';
+	var temp;
+	var mouse_click;
+	for(var i=0;i<arr.length;i++){
+		temp = parseInt(get(arr[i])[0]);
+		colors=color(temp);
+		if(get(arr[i])[0]==1){state="占用";mouse_click='onClick="check(this.id);"'}else{state="空闲";mouse_click=''}
+		//str+="编号 "+i+", 状态 "+state+", 起始地址 "+get(arr[i])[1]+", 长度 "+get(arr[i])[2]+ "<br />";
+		str+='<a href="#" class="list-group-item '+colors+'" id="'+i+'"'+mouse_click+'>编号 '+i+', 状态 '+state+', 起始地址 '+get(arr[i])[1]+', 长度 '+get(arr[i])[2]+ '</a>';
+		if(get(arr[i])[0]==0){
+			no_user_size+=parseInt(get(arr[i])[2]);
+		}else{
+			user_size+=parseInt(get(arr[i])[2]);
+		}
+	}
+	document.getElementById("zone").innerHTML=str;
+	str_state='总空间大小 <span class="text-success">100</span>'+',已使用大小 <span class="text-danger">'+user_size+'</span>,空闲大小 <span class="text-success">'+no_user_size+'</span>';
+	document.getElementById("state").innerHTML=str_state;
+}
+var arr = new Array()
+arr[0] = "0,0,100"
+
+function get(str){
+	//定义一数组
+	var content= new Array(); 
+	//取出所系统随机选择的空位索引
+	content=str.split(",");
+	return content;
+}
+
+function set(num,type,location,content){
+	var st=get(arr[num]);
+	var con;
+	switch(location){
+		case 0:
+		con=content+","+st[1]+","+st[2];
+		break;
+		case 1:
+		con=st[0]+","+content+","+st[2];
+		break;
+		case 2:
+		con=st[0]+","+st[1]+","+content;
+		break;	
+	}
+	arr.splice(num,type,con)
+}
+show();
+
+function apply(){
+	//arr.splice(2,1,"1,William,"+"40,"+size)
+	var state=0;
+	var size=parseInt(document.getElementById("sq").value);//要申请的空间大小
+	var length=arr.length;
+	for(var i=0;i<length;i++){
+		if(parseInt(get(arr[i])[0])==0&&parseInt(get(arr[i])[2])==size){	
+			set(i,1,0,1);
+			break;
+		}else if(parseInt(get(arr[i])[0])==0&&parseInt(get(arr[i])[2])>size){
+			//alert(i+"空间大于");
+			var start=parseInt(get(arr[i])[1]);
+			var long=parseInt(get(arr[i])[2])-size;
+			arr.splice(i,0,"1,"+start+","+size)
+			set(i+1,1,1,start+size);
+			set(i+1,1,2,long);
+			break;
+		}else{
+			//alert(i+"空间小于");
+			state++;
+		}
+	}
+	if(state==length){
+		alert("现有空间大小不满足条件！");
+	}else{
+		show();
+	}
+}
+
+function release(){
+	var num=parseInt(document.getElementById("sf").value);
+	var state=false;
+	for(var i=0;i<arr.length;i++){
+		if(i==num&&get(arr[i])[0]!=0){
+			set(i,1,0,0);
+			state=true;
+			break;
+		}
+	}
+	if(state==false){
+		alert("此编号名无效！");
+	}else{//只有当有释放空间的时候才运行合并方法
+		//show();
+		merge_space();
+		show();
+	}
+}
+
+function merge_space(){
+	var length=arr.length;
+	var merge_state_first;
+	var num1=null;
+	var num2=null;
+	var merge_state_num=0;
+	var merge_state_size=0;
+	for(var i=0;i<arr.length;i++){
+		if(get(arr[i])[0]==0){
+			merge_state_num++;
+			if(merge_state_num==1){
+				merge_state_first=i;			
+			}
+			if(merge_state_num>1){
+				merge_state_size+=parseInt(get(arr[i])[2]);
+				//arr.splice(i,1);
+				if(num1==null){
+					num1=i;
+				}else{
+					num2=i;	
+				}
+				//i=0;	
+			}
+			//alert("arr.length"+arr.length+" i "+i+" merge_state_num "+merge_state_num);		
+			if(merge_state_num==2){
+				if((length-i)==1){
+					var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
+					set(merge_state_first,1,2,sum);
+					arr.splice(num1,1);
+					merge_state_num=0;
+				}else if(get(arr[i+1])[0]!=0){
+					var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
+					set(merge_state_first,1,2,sum);
+					arr.splice(num1,1);
+					merge_state_num=0;
+				}
+			}
+			if(merge_state_num==3){
+				//alert(num1+"  "+num2);
+				var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
+				set(merge_state_first,1,2,sum);
+				arr.splice(num1,1);
+				arr.splice(num2-1,1);
+				merge_state_num=0;
+			}
+		//}else if(merge_state_num=2){
+//			var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
+//			set(merge_state_first,2,sum);
+//			merge_state_num=0;
+		}else{
+			merge_state_num=0;
+		}
+	}
+}
+
+//30  21
+</script>
+</body>
+</html>
