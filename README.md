@@ -1,4 +1,4 @@
-# 可变分区式存储管理程序演示截图[Variable-partitioned-storage-management]
+# 可变分区式存储管理[Variable-partitioned-storage-management]
 
 > 推荐使用火狐、谷歌、safri、opera 等浏览器查看，IE9 以下没有效果，完整版请使用 IE9+浏览器打开。
 
@@ -28,6 +28,8 @@
 
 -   一是调度到某作业时，若系统的每个空闲区尺寸都小于它的需要，但空闲区总存储量大于它的存储请求，于是进行空闲区合并，得到一个大的空闲区，满足该作业的需要。
 -   一是只要有作业运行完归还所占用的存储区，系统就进行空闲区的合并。
+
+## 程序模拟操作步骤
 
 1. 申请一个大小为 20 的空间
    ![An image](https://raw.githubusercontent.com/nuochong/kebian/master/img/11.png)
