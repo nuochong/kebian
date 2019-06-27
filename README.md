@@ -12,7 +12,7 @@
 4. 继续释放编号为 2 的空闲空间，因为本来就是空闲空间，所以不能释放，将提示此编号名无效！
    ![An image](https://raw.githubusercontent.com/nuochong/kebian/master/img/44.png)
 5. 释放编号为 0 的作业后继续释放编号为 1 的作业，可以看到空间合并。
-   ![An image](https://raw.githubusercontent.com/nuochong/kebian/master/img/55.png)
-   ![An image](https://raw.githubusercontent.com/nuochong/kebian/master/img/66.png)
+   ![An image](https://raw.githubusercontent.com/nuochong/kebian/master/img/55.png)  
+   ![An image](https://raw.githubusercontent.com/nuochong/kebian/master/img/66.png) 
 
 释放可以使用鼠标点击左边红色占用块自动添加编号。
