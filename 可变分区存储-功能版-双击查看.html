@@ -1,164 +1,168 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>可变式存储管理</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>可变式存储管理</title>
 </head>
 
 <body>
-<span id="state"></span><br/>
-<input type="text" id="sq" placeholder="请输入申请的大小" value="30" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
-<input type="text" id="sf" placeholder="请输入要释放的编号" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
-<button type="button" onClick="apply()">申请</button>
-<button type="button" onClick="release();">释放</button>
-<span id="zone"></span>
-<script type="text/javascript">
-function show(){
-	var str='<br/>';
-	var no_user_size=0;
-	var user_size=0;
-	var str_state='';
-	for(var i=0;i<arr.length;i++){
-		if(get(arr[i])[0]==1){state="占用"}else{state="空闲"}
-		str+="编号 "+i+", 状态 "+state+", 起始地址 "+get(arr[i])[1]+", 长度 "+get(arr[i])[2]+ "<br />";
-		if(get(arr[i])[0]==0){
-			no_user_size+=parseInt(get(arr[i])[2]);
-		}else{
-			user_size+=parseInt(get(arr[i])[2]);
-		}
-	}
-	str+="<br /><br />";
-	document.getElementById("zone").innerHTML=str;
-	str_state="总空间大小 100"+",已使用大小 "+user_size+",空闲大小 "+no_user_size;
-	document.getElementById("state").innerHTML=str_state;
-}
-var arr = new Array()
-arr[0] = "0,0,100"
+  <span id="state"></span><br />
+  <input type="text" id="sq" placeholder="请输入申请的大小" value="30" onkeyup="this.value=this.value.replace(/\D/g,'')"
+    onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+  <input type="text" id="sf" placeholder="请输入要释放的编号" onkeyup="this.value=this.value.replace(/\D/g,'')"
+    onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+  <button type="button" onClick="apply()">申请</button>
+  <button type="button" onClick="release();">释放</button>
+  <span id="zone"></span>
+  <script type="text/javascript">
+    function show() {
+      var str = '<br/>';
+      var no_user_size = 0;
+      var user_size = 0;
+      var str_state = '';
+      for (var i = 0; i < arr.length; i++) {
+        if (get(arr[i])[0] == 1) { state = "占用" } else { state = "空闲" }
+        str += "编号 " + i + ", 状态 " + state + ", 起始地址 " + get(arr[i])[1] + ", 长度 " + get(arr[i])[2] + "<br />";
+        if (get(arr[i])[0] == 0) {
+          no_user_size += parseInt(get(arr[i])[2]);
+        } else {
+          user_size += parseInt(get(arr[i])[2]);
+        }
+      }
+      str += "<br /><br />";
+      document.getElementById("zone").innerHTML = str;
+      str_state = "总空间大小 100" + ",已使用大小 " + user_size + ",空闲大小 " + no_user_size;
+      document.getElementById("state").innerHTML = str_state;
+    }
+    var arr = new Array()
+    arr[0] = "0,0,100"
 
-function get(str){
-	//定义一数组
-	var content= new Array(); 
-	//取出所系统随机选择的空位索引
-	content=str.split(",");
-	return content;
-}
+    function get(str) {
+      //定义一数组
+      var content = new Array();
+      //取出所系统随机选择的空位索引
+      content = str.split(",");
+      return content;
+    }
 
-function set(num,type,location,content){
-	var st=get(arr[num]);
-	var con;
-	switch(location){
-		case 0:
-		con=content+","+st[1]+","+st[2];
-		break;
-		case 1:
-		con=st[0]+","+content+","+st[2];
-		break;
-		case 2:
-		con=st[0]+","+st[1]+","+content;
-		break;	
-	}
-	arr.splice(num,type,con)
-}
-show();
+    function set(num, type, location, content) {
+      var st = get(arr[num]);
+      var con;
+      switch (location) {
+        case 0:
+          con = content + "," + st[1] + "," + st[2];
+          break;
+        case 1:
+          con = st[0] + "," + content + "," + st[2];
+          break;
+        case 2:
+          con = st[0] + "," + st[1] + "," + content;
+          break;
+      }
+      arr.splice(num, type, con)
+    }
+    show();
 
-function apply(){
-	//arr.splice(2,1,"1,William,"+"40,"+size)
-	var size=parseInt(document.getElementById("sq").value);//要申请的空间大小
-	var length=arr.length;
-	for(var i=0;i<length;i++){
-		if(parseInt(get(arr[i])[0])==0&&parseInt(get(arr[i])[2])==size){	
-			set(i,1,0,1);
-			break;
-		}else if(parseInt(get(arr[i])[0])==0&&parseInt(get(arr[i])[2])>size){
-			//alert(i+"空间大于");
-			var start=parseInt(get(arr[i])[1]);
-			var long=parseInt(get(arr[i])[2])-size;
-			arr.splice(i,0,"1,"+start+","+size)
-			set(i+1,1,1,start+size);
-			set(i+1,1,2,long);
-			break;
-		}else{
-			//alert(i+"空间小于");
-		}
-	}
-	show();
-}
+    function apply() {
+      //arr.splice(2,1,"1,William,"+"40,"+size)
+      var size = parseInt(document.getElementById("sq").value);//要申请的空间大小
+      var length = arr.length;
+      for (var i = 0; i < length; i++) {
+        if (parseInt(get(arr[i])[0]) == 0 && parseInt(get(arr[i])[2]) == size) {
+          set(i, 1, 0, 1);
+          break;
+        } else if (parseInt(get(arr[i])[0]) == 0 && parseInt(get(arr[i])[2]) > size) {
+          //alert(i+"空间大于");
+          var start = parseInt(get(arr[i])[1]);
+          var long = parseInt(get(arr[i])[2]) - size;
+          arr.splice(i, 0, "1," + start + "," + size)
+          set(i + 1, 1, 1, start + size);
+          set(i + 1, 1, 2, long);
+          break;
+        } else {
+          //alert(i+"空间小于");
+        }
+      }
+      show();
+    }
 
-function release(){
-	var num=parseInt(document.getElementById("sf").value);
-	var state=false;
-	for(var i=0;i<arr.length;i++){
-		if(i==num&&get(arr[i])[0]!=0){
-			set(i,1,0,0);
-			state=true;
-			break;
-		}
-	}
-	if(state==false){
-		alert("您输入的作业名无效");
-	}else{//只有当有释放空间的时候才运行合并方法
-		//show();
-		merge_space();
-		show();
-	}
-}
+    function release() {
+      var num = parseInt(document.getElementById("sf").value);
+      var state = false;
+      for (var i = 0; i < arr.length; i++) {
+        if (i == num && get(arr[i])[0] != 0) {
+          set(i, 1, 0, 0);
+          state = true;
+          break;
+        }
+      }
+      if (state == false) {
+        alert("您输入的作业名无效");
+      } else {//只有当有释放空间的时候才运行合并方法
+        //show();
+        merge_space();
+        show();
+      }
+    }
 
-function merge_space(){
-	var length=arr.length;
-	var merge_state_first;
-	var num1=null;
-	var num2=null;
-	var merge_state_num=0;
-	var merge_state_size=0;
-	for(var i=0;i<arr.length;i++){
-		if(get(arr[i])[0]==0){
-			merge_state_num++;
-			if(merge_state_num==1){
-				merge_state_first=i;			
-			}
-			if(merge_state_num>1){
-				merge_state_size+=parseInt(get(arr[i])[2]);
-				//arr.splice(i,1);
-				if(num1==null){
-					num1=i;
-				}else{
-					num2=i;	
-				}
-				//i=0;	
-			}
-			//alert("arr.length"+arr.length+" i "+i+" merge_state_num "+merge_state_num);		
-			if(merge_state_num==2){
-				if((length-i)==1){
-					var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
-					set(merge_state_first,1,2,sum);
-					arr.splice(num1,1);
-					merge_state_num=0;
-				}else if(get(arr[i+1])[0]!=0){
-					var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
-					set(merge_state_first,1,2,sum);
-					arr.splice(num1,1);
-					merge_state_num=0;
-				}
-			}
-			if(merge_state_num==3){
-				//alert(num1+"  "+num2);
-				var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
-				set(merge_state_first,1,2,sum);
-				arr.splice(num1,1);
-				arr.splice(num2-1,1);
-				merge_state_num=0;
-			}
-		//}else if(merge_state_num=2){
-//			var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
-//			set(merge_state_first,2,sum);
-//			merge_state_num=0;
-		}else{
-			merge_state_num=0;
-		}
-	}
-}
+    function merge_space() {
+      var length = arr.length;
+      var merge_state_first;
+      var num1 = null;
+      var num2 = null;
+      var merge_state_num = 0;
+      var merge_state_size = 0;
+      for (var i = 0; i < arr.length; i++) {
+        if (get(arr[i])[0] == 0) {
+          merge_state_num++;
+          if (merge_state_num == 1) {
+            merge_state_first = i;
+          }
+          if (merge_state_num > 1) {
+            merge_state_size += parseInt(get(arr[i])[2]);
+            //arr.splice(i,1);
+            if (num1 == null) {
+              num1 = i;
+            } else {
+              num2 = i;
+            }
+            //i=0;	
+          }
+          //alert("arr.length"+arr.length+" i "+i+" merge_state_num "+merge_state_num);		
+          if (merge_state_num == 2) {
+            if ((length - i) == 1) {
+              var sum = merge_state_size + parseInt(get(arr[merge_state_first])[2]);
+              set(merge_state_first, 1, 2, sum);
+              arr.splice(num1, 1);
+              merge_state_num = 0;
+            } else if (get(arr[i + 1])[0] != 0) {
+              var sum = merge_state_size + parseInt(get(arr[merge_state_first])[2]);
+              set(merge_state_first, 1, 2, sum);
+              arr.splice(num1, 1);
+              merge_state_num = 0;
+            }
+          }
+          if (merge_state_num == 3) {
+            //alert(num1+"  "+num2);
+            var sum = merge_state_size + parseInt(get(arr[merge_state_first])[2]);
+            set(merge_state_first, 1, 2, sum);
+            arr.splice(num1, 1);
+            arr.splice(num2 - 1, 1);
+            merge_state_num = 0;
+          }
+          //}else if(merge_state_num=2){
+          //			var sum=merge_state_size+parseInt(get(arr[merge_state_first])[2]);
+          //			set(merge_state_first,2,sum);
+          //			merge_state_num=0;
+        } else {
+          merge_state_num = 0;
+        }
+      }
+    }
 
 //30  21
-</script>
+  </script>
 </body>
+
 </html>
